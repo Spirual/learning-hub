@@ -9,6 +9,8 @@ class Course(models.Model):
     title = models.CharField(max_length=255, verbose_name='Описание')
     start_date_time = models.DateTimeField(verbose_name='Дата начала')
     cost = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Стоимость')
+    min_users = models.PositiveIntegerField(default=1, verbose_name='Мин. кол-во студентов')
+    max_users = models.PositiveIntegerField(default=20, verbose_name='Макc. кол-во студентов')
 
     class Meta:
         verbose_name = 'Курс'
@@ -32,7 +34,7 @@ class CourseAccess(models.Model):
         verbose_name_plural = 'Доступ к курсам'
 
     def __str__(self):
-        return f'Студенту {self.students} доступен курс {self.courses}'
+        return f'Доступ студента {self.students} к курсу {self.courses}'
 
 
 class Lesson(models.Model):
@@ -49,26 +51,24 @@ class Lesson(models.Model):
 
 
 class Cohort(models.Model):
-    title = models.CharField(max_length=255)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='cohort', verbose_name='Курс')
-    min_users = models.PositiveIntegerField(default=1)
-    max_users = models.PositiveIntegerField(default=20)
+    title = models.CharField(max_length=255, verbose_name='Название')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='cohorts', verbose_name='Курс')
 
     class Meta:
-        verbose_name = 'Группа'
-        verbose_name_plural = 'Группы'
+        verbose_name = 'Когорта'
+        verbose_name_plural = 'Когорты'
 
     def __str__(self):
         return self.title
 
 
 class CohortMembership(models.Model):
-    group = models.ForeignKey(Cohort, on_delete=models.CASCADE, related_name='users', verbose_name='Группа')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cohort', verbose_name='Пользователь')
+    cohort = models.ForeignKey(Cohort, on_delete=models.CASCADE, related_name='users', verbose_name='Когорта')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cohorts', verbose_name='Студент')
 
     class Meta:
-        verbose_name = 'Членство в группе'
-        verbose_name_plural = 'Членство в группе'
+        verbose_name = 'Членство в когорте'
+        verbose_name_plural = 'Членства в когорте'
 
     def __str__(self):
-        return f'Студент {self.user}состоит в группе {self.group}'
+        return f'Членство студента {self.student} в когорте {self.cohort}'
