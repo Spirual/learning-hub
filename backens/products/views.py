@@ -39,17 +39,17 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
         if not cohorts.exists():
             return Response({'message': 'Для данного курса еще нет когорт'}, status=status.HTTP_403_FORBIDDEN)
 
+        if CohortMembership.objects.filter(student=user, cohort__course=course).exists():
+            return Response({'error': 'Вы уже приобрели данный курс'}, status=status.HTTP_403_FORBIDDEN)
+
         if course.start_date_time < timezone.now():
             return Response(
                 {'message': 'Вы опоздали на данный курс, он уже начался'},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        if CohortMembership.objects.filter(student=user, cohort__course=course).exists():
-            return Response({'error': 'Вы уже приобрели данный курс'}, status=status.HTTP_403_FORBIDDEN)
-
         for cohort in cohorts:
-            if cohort.users.count() <= course.max_users:
+            if cohort.users.count() < course.max_users:
                 CohortMembership.objects.create(cohort=cohort, student=user)
                 message = (f'Поздравляем! Вы успешно приобрели курс: "{course.title}"'
                            f' и зачислены в когорту: "{cohort.title}"')
