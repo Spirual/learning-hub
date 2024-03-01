@@ -2,7 +2,7 @@
 
 Приветствую вас в проекте "Учебный центр"! Этот проект предоставляет платформу для обучения, где вы можете зарегистрироваться, выбрать интересующий вас курс, и получить доступ к урокам этого курса.
 
-## Функциональности
+## Функциональность
 
 -   **Регистрация и аутентификация**: Зарегистрируйтесь на платформе и получите свой уникальный токен для доступа к функциональности проекта.
     
@@ -29,30 +29,22 @@
 ## Установка и запуск
 
 1.  Клонируйте репозиторий:
-    
-    bashCopy code
-    
-    `git clone https://github.com/Spirual/learning-hub` 
-    
+    ```shell
+    git clone https://github.com/Spirual/learning-hub
+    ```     
 2.  Установите зависимости:
-    
-    bashCopy code
-    
-    `pip install -r requirements.txt` 
-    
-3.  Примените миграции:
-    
-    bashCopy code
-    
-    `python manage.py migrate` 
-    
+    ```shell
+    pip install -r requirements.txt
+    ```
+3. Примените миграции:
+    ```shell
+    python manage.py migrate
+    ``` 
 4.  Запустите сервер:
+    ```shell
+    python manage.py runserver
+    ```
     
-    bashCopy code
-    
-    `python manage.py runserver` 
-    
-
 Теперь вы можете начать использовать "Учебный центр"! Успешного обучения!
 
 ----------
