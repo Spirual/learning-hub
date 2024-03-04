@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import viewsets, status
@@ -48,12 +49,21 @@ class CourseViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        for cohort in cohorts:
-            if cohort.users.count() < course.max_users:
-                CohortMembership.objects.create(cohort=cohort, student=user)
-                message = (f'Поздравляем! Вы успешно приобрели курс: "{course.title}"'
-                           f' и зачислены в когорту: "{cohort.title}"')
-                return Response({'message': message}, status=status.HTTP_200_OK)
+        all_users = cohorts.aggregate(total_users=Count('users__id', distinct=True))['total_users']
+        cohorts_count = len(cohorts)
+        if all_users < course.min_users * cohorts_count:
+            for cohort in cohorts:
+                if cohort.users.count() < course.min_users:
+                    CohortMembership.objects.create(cohort=cohort, student=user)
+                    message = (f'Поздравляем! Вы успешно приобрели курс: "{course.title}"'
+                               f' и зачислены в когорту: "{cohort.title}"')
+                    return Response({'message': message}, status=status.HTTP_200_OK)
+        elif all_users < course.max_users * cohorts_count:
+            index = all_users % len(cohorts)
+            CohortMembership.objects.create(cohort=cohorts[index], student=user)
+            message = (f'Поздравляем! Вы успешно приобрели курс: "{course.title}"'
+                       f' и зачислены в когорту: "{cohorts[index].title}"')
+            return Response({'message': message}, status=status.HTTP_200_OK)
 
         return Response(
             {'message': 'Извините, все когорты для данного курса заполнены. Дождитесь следующего набора'},
