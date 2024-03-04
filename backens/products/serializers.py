@@ -10,7 +10,6 @@ User = get_user_model()
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name')
@@ -25,7 +24,20 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'author', 'title', 'slug', 'start_date_time', 'cost', 'min_users', 'max_users', 'lessons_count', 'students_count', 'group_fill', 'acquisition_percentage')
+        fields = (
+            'id',
+            'author',
+            'title',
+            'slug',
+            'start_date_time',
+            'cost',
+            'min_users',
+            'max_users',
+            'lessons_count',
+            'students_count',
+            'group_fill',
+            'acquisition_percentage',
+        )
 
     def get_lessons_count(self, obj):
         return obj.lessons.count()
@@ -47,7 +59,9 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_acquisition_percentage(self, obj):
         total_users_on_platform = User.objects.count()
-        total_accesses = obj.cohorts.aggregate(total_accesses=Coalesce(Count('users__id', distinct=True), 0))['total_accesses']
+        total_accesses = obj.cohorts.aggregate(total_accesses=Coalesce(Count('users__id', distinct=True), 0))[
+            'total_accesses'
+        ]
 
         if total_users_on_platform > 0:
             acquisition_percentage = (total_accesses / total_users_on_platform) * 100
@@ -57,7 +71,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class LessonSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Lesson
         fields = ('id', 'title', 'video_link')

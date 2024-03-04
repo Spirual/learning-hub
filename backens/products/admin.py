@@ -9,6 +9,7 @@ class CohortAdmin(admin.ModelAdmin):
 
     def course_name(self, obj):
         return obj.course.title
+
     course_name.short_description = 'Название курса'
 
 
@@ -21,6 +22,7 @@ class LessonAdmin(admin.ModelAdmin):
 
     def course_name(self, obj):
         return obj.courses.title
+
     course_name.short_description = 'Название курса'
 
 
